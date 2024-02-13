@@ -1,9 +1,9 @@
-function result_struct = analyze_single(prop_name, freq)
+function result_struct = analyze_single(prop_size, freq)
     result_struct.status = 1;
     
     % Read in data
     cd phase1_data
-    test_name = sprintf("%s_%d",prop_name,freq);
+    test_name = sprintf("prop%d_%d",prop_size,freq);
     table_in = readtable(sprintf("%s.csv",test_name));
     arr_in = table2array(table_in);
     
@@ -44,7 +44,7 @@ function result_struct = analyze_single(prop_name, freq)
     thrust_avg = movmean(thrust_zeroed, avgs);
     rpm_avg = movmean(rpm_arr, avgs);
     
-    fig_name = sprintf("%s @ %d Hz", prop_name, freq);
+    fig_name = sprintf("prop %d @ %d Hz", prop_size, freq);
     figure('Name', fig_name);
     sgtitle(fig_name);
     subplot(2,2,1)
