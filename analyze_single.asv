@@ -9,23 +9,16 @@ function result_struct = analyze_single(prop_name, freq)
     
     % Find portion of data that script is running
     cut_start = find(arr_in(:,1) == 0, 1, 'last');
-    cut_end = find(arr_in(:, 1) > 23 & (isnan(arr_in(:, 2)) | arr_in(:,2) == 1000), 1);
+    cut_end = find(arr_in(:, 1) > 20 & isnan(arr_in(:, 2)), 1);
     arr_cut = arr_in(cut_start:cut_end,:);
     
     % Index of script arr when Prop starts turning
     rpm_start = find(arr_cut(:,13) == 0, 1, 'last');
+    fprintf("%d: %d
+    
     
     % Index when ESC starts increasing
     power_start = find(arr_cut(:,2) > 1000 , 1);
-    
-    
-    fprintf("%d: %d, %d - %d\n", freq, rpm_start, power_start, arr_cut(power_start,13));
-    
-    if (size(rpm_start,1) == 0) % Err when prop is already turning
-        result_struct.status = 0;
-        result_struct.code = 1;
-        return; 
-    end
     
     if (power_start > rpm_start) % Err when prop is turning before power
         result_struct.status = 0;
