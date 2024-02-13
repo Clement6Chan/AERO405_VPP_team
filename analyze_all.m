@@ -31,7 +31,7 @@ for propID = 1:3
         cd(home_dir);
         if (result_struct.status)
             figure(all_thrust_zero);
-            plot(result_struct.time, result_struct.thrust_zero);
+            plot(result_struct.time, result_struct.thrust_zeroed);
             figure(all_thrust);
             plot(result_struct.time, result_struct.thrust);
         end

@@ -43,18 +43,38 @@ function result_struct = analyze_single(prop_size, freq)
     avgs = 10;
     thrust_avg = movmean(thrust_zeroed, avgs);
     rpm_avg = movmean(rpm_arr, avgs);
+
+    % Package results
+    result_struct.prop_size = prop_size;
+    result_struct.freq = freq;
+    result_struct.time = time_arr;
+    result_struct.thrust = thrust_arr;
+    result_struct.thrust_zeroed = thrust_zeroed;
+    result_struct.thrust_avg = thrust_avg;
+    result_struct.rpm = rpm_arr;
+    result_struct.rpm_avg = rpm_avg;
+    result_struct.power_start_idx = power_start;
+    result_struct.rotation_start_idx = rpm_start;
     
-    fig_name = sprintf("prop %d @ %d Hz", prop_size, freq);
+    
+    % Plot results
+    plot_single(result_struct);
+end
+
+
+
+function plot_single(result_struct)
+    fig_name = sprintf("prop %d @ %d Hz", result_struct.prop_size, result_struct.freq);
     figure('Name', fig_name);
     sgtitle(fig_name);
     subplot(2,2,1)
-    plot(time_arr, thrust_arr);
+    plot(result_struct.time, result_struct.thrust);
     xlabel("Time (s)");
     ylabel("Thrust (kgf)");
     title("Thrust over time");
     
     subplot(2,2,2);
-    plot(rpm_arr, thrust_zeroed, '-b');
+    plot(result_struct.rpm, result_struct.thrust_zeroed, '-b');
     yline(0,'--');
     xlabel("RPM");
     ylabel("Thrust (kgf)");
@@ -63,17 +83,9 @@ function result_struct = analyze_single(prop_size, freq)
     subplot(2,2,3);
     
     subplot(2,2,4);
-    plot(rpm_avg, thrust_avg, '-r');
+    plot(result_struct.rpm_avg, result_struct.thrust_avg, '-r');
     yline(0,'--');
     xlabel("RPM");
     ylabel("Thrust (kgf)");
     title("Thrust vs RPM (zeroed & averaged)");
-
-    % Package results
-    result_struct.time = time_arr;
-    result_struct.thrust = thrust_arr;
-    result_struct.thrust_zero = thrust_zeroed;
-    result_struct.RPM = rpm_arr;
-    result_struct.power_start_idx = power_start;
-    result_struct.rotation_start_idx = rpm_start;
 end
