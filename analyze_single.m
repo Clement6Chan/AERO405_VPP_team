@@ -109,5 +109,6 @@ function plot_single(result_struct)
     
     subplot(2,2,4);
     plot(result_struct.J, result_struct.Kt);
+    yline(0,'--');
     title("Thrust Coefficient vs Advance Ratio");
 end

@@ -1,4 +1,6 @@
-function  analyze_prop(propSize)
+function combined_struct = analyze_prop(propSize)
+    combined_struct.J = [];
+    combined_struct.Kt = [];
 
     %Plot 1
     all_thrust_zero = figure('Name', 'all_thrust_zero');
@@ -22,6 +24,8 @@ function  analyze_prop(propSize)
         result_struct = analyze_single(propSize, freq);
         
         if (result_struct.status)
+            combined_struct.J = [combined_struct.J,result_struct.J];
+            combined_struct.Kt = [combined_struct.Kt,result_struct.Kt];
             % Add legend entry
             legend_labels{label_idx} = sprintf("%d Hz", freq);
             label_idx = label_idx + 1;
