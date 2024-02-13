@@ -57,7 +57,7 @@ function result_struct = analyze_single(prop_name, freq)
     plot(rpm_arr, thrust_zeroed, '-b');
     yline(0,'--');
     xlabel("RPM");
-    xlabel("Thrust (kgf)");
+    ylabel("Thrust (kgf)");
     title("Thrust vs RPM (zeroed)");
     
     subplot(2,2,3);
@@ -66,7 +66,7 @@ function result_struct = analyze_single(prop_name, freq)
     plot(rpm_avg, thrust_avg, '-r');
     yline(0,'--');
     xlabel("RPM");
-    xlabel("Thrust (kgf)");
+    ylabel("Thrust (kgf)");
     title("Thrust vs RPM (zeroed & averaged)");
 
     % Package results

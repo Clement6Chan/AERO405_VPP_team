@@ -14,7 +14,7 @@ home_dir = pwd;
 
 
 
-for propID = 3:3
+for propID = 1:3
     all_thrust_zero = figure('Name', 'all_thrust_zero');
     hold on
     title(sprintf("%s Thrust over Time\n(zeroed at initial Thrust)", propNames{propID}));
