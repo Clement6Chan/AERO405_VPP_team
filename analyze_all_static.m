@@ -23,7 +23,7 @@ function analyze_all_static()
         arr_cut = arr_in(cut_start:cut_end,:);
         
         time_arr = arr_cut(:,1);
-        Q = arr_cut(:,9) - arr_cut(1,9); % Nm
+        Q = arr_cut(:,9) - arr_in(1,9); % Nm
         T = arr_cut(:,10) * 9.80665; %kgf to N
         V = arr_cut(:,13) .* (2*pi/60); % RPM to rad/s
         Pe = arr_cut(:,15); % W
