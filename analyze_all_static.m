@@ -12,6 +12,9 @@ function analyze_all_static()
     overall eff: 19
     %}
     
+    combined_eff = figure;
+    hold on;
+    
     for propID = 1:3
         test_name = sprintf("prop%d_static",propSizes{propID});
         table_in = readtable(sprintf("%s.csv",test_name));
@@ -69,9 +72,22 @@ function analyze_all_static()
         title(sprintf("Overall Efficiency\nN/W"));
         yline(0,'--');
         
+        figure(combined_eff)
+        plot(time_arr, effO_calc);
+        
         
         saveas(fig, sprintf("prop%d_plots/prop%d_efficiency.png", propSizes{propID}, propSizes{propID}));
     end
     
+    figure(combined_eff)
+    ylim([-0.1,0.15]);
+    yline(0,'--');
+    xlabel("Time (s)")
+    ylabel("Efficiency (N/W)");
+    title("Overall Efficiency for static tests");
+    legend({"9 inch","9.5 inch", "10 inch"});
+    saveas(combined_eff, "Combined_Efficiency.png");
 end
+
+
 
