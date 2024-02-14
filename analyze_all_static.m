@@ -12,7 +12,10 @@ function analyze_all_static()
     overall eff: 19
     %}
     
-    combined_eff = figure;
+    combined_O = figure;
+    hold on;
+    
+    combined_P = figure;
     hold on;
     
     for propID = 1:3
@@ -72,22 +75,35 @@ function analyze_all_static()
         plot(time_arr, effO_calc,'r');
         title(sprintf("Overall Efficiency\nN/W"));
         yline(0,'--');
+
+        saveas(fig, sprintf("prop%d_plots/prop%d_efficiency.png", propSizes{propID}, propSizes{propID}));
         
-        figure(combined_eff)
+        
+        figure(combined_O)
         plot(time_arr, effO_calc);
         
-        
-        saveas(fig, sprintf("prop%d_plots/prop%d_efficiency.png", propSizes{propID}, propSizes{propID}));
+        figure(combined_P)
+        plot(time_arr, effP_calc);
+    
     end
     
-    figure(combined_eff)
+    figure(combined_O)
     ylim([0,0.1]);
     yline(0,'--');
     xlabel("Time (s)")
     ylabel("Efficiency (N/W)");
     title("Overall Efficiency for static tests");
     legend({"9 inch","9.5 inch", "10 inch"});
-    saveas(combined_eff, "Combined_Efficiency.png");
+    saveas(combined_O, "Combined_Overall_eff.png");
+    
+    figure(combined_P)
+    ylim([0,10]);
+    yline(0,'--');
+    xlabel("Time (s)")
+    ylabel("Efficiency (N/W)");
+    title("Propeller Efficiency for static tests");
+    legend({"9 inch","9.5 inch", "10 inch"});
+    saveas(combined_O, "Combined_Prop_eff.png");
 end
 
 
