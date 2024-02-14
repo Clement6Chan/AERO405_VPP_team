@@ -27,7 +27,8 @@ function analyze_all_static()
         
         time_arr = arr_cut(:,1);
         Q = arr_cut(:,9) - arr_in(1,9); % Nm
-        T = arr_cut(:,10) * 9.80665; %kgf to N
+        T = arr_cut(:,10) - arr_cut(1,10); % Zero thrust readings
+        T = T * -9.80665; %kgf to N
         V = arr_cut(:,13) .* (2*pi/60); % RPM to rad/s
         Pe = arr_cut(:,15); % W
         Pm = arr_cut(:,16); % W
@@ -63,7 +64,7 @@ function analyze_all_static()
         hold on
         plot(time_arr, effP_calc,'r');
         title(sprintf("Propeller Efficiency\nN/W"));
-        ylim([-4,4]);
+        ylim([0,10]);
         yline(0,'--');
         
         subplot(2,3,5)
@@ -80,7 +81,7 @@ function analyze_all_static()
     end
     
     figure(combined_eff)
-    ylim([-0.1,0.15]);
+    ylim([0,0.1]);
     yline(0,'--');
     xlabel("Time (s)")
     ylabel("Efficiency (N/W)");
