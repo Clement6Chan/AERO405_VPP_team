@@ -38,6 +38,8 @@ function analyze_all_static()
         effM = arr_cut(:,17); % 
         effP = arr_cut(:,18) * 9.80665; % kgf/W to N/W
         effO = arr_cut(:,19) * 9.80665; % kgf/W to N/W
+        rpm = arr_cut(:,13);
+        rpm_avg = movmean(rpm, 10);
         
         Pm_calc = -Q .* V; % W
         effM_calc = Pm_calc ./ Pe;
@@ -80,17 +82,17 @@ function analyze_all_static()
         
         
         figure(combined_O)
-        plot(time_arr, effO_calc);
+        plot(rpm_avg, effO_calc,'-');
         
         figure(combined_P)
-        plot(time_arr, effP_calc);
+        plot(rpm_avg, effP_calc,'-');
     
     end
     
     figure(combined_O)
     ylim([0,0.1]);
     yline(0,'--');
-    xlabel("Time (s)")
+    xlabel("RPM")
     ylabel("Efficiency (N/W)");
     title("Overall Efficiency for static tests");
     legend({"9 inch","9.5 inch", "10 inch"});
@@ -99,11 +101,11 @@ function analyze_all_static()
     figure(combined_P)
     ylim([0,10]);
     yline(0,'--');
-    xlabel("Time (s)")
+    xlabel("RPM")
     ylabel("Efficiency (N/W)");
     title("Propeller Efficiency for static tests");
     legend({"9 inch","9.5 inch", "10 inch"});
-    saveas(combined_O, "Combined_Prop_eff.png");
+    saveas(combined_P, "Combined_Prop_eff.png");
 end
 
 

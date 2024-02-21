@@ -1,4 +1,4 @@
-function result_struct = analyze_single(prop_size, freq, plotOn)
+function result_struct = analyze_single2(prop_size, freq, plotOn)
     result_struct.status = 1;
     
     % Read in data
@@ -32,24 +32,33 @@ function result_struct = analyze_single(prop_size, freq, plotOn)
     avgs = 10;
     rpm_cutoff = 1000;
     
-    % Grab relevant data 
+    % Get data when script is running 
     time_arr = arr_cut(:,1);
+    Q = arr_cut(:,9) - arr_in(1,9); % Nm
+    T = arr_cut(:,10) - arr_cut(1,10); % Zero thrust readings
+    T = T * -9.80665; %kgf to N
+    V = arr_cut(:,13) .* (2*pi/60); % RPM to rad/s
+    Pe = arr_cut(:,15); % W
+    Pm = arr_cut(:,16); % W
+    effM = arr_cut(:,17); % 
+    effP = arr_cut(:,18) * 9.80665; % kgf/W to N/W
+    effO = arr_cut(:,19) * 9.80665; % kgf/W to N/W
+        
     thrust_arr = arr_cut(:,10);
-    thrust_zeroed = thrust_arr - thrust_arr(1);
-    rpm_arr = arr_cut(:,13);
-    rpm_avg = movmean(rpm_arr, avgs);
-    thrust_avg = movmean(thrust_zeroed, avgs);
+    rpm = arr_cut(:,13);
+    rpm_avg = movmean(rpm, avgs);
+    T_avg = movmean(T, avgs);
     
-    % Adjust data for plotting
-    rpm_cutoff_idx = find(rpm_arr > rpm_cutoff, 1, 'first');
-    thrust_cutoff_idx = find(thrust_avg < -0.01, 1, 'first');
+    % Get relevant data points
+    rpm_cutoff_idx = find(rpm > rpm_cutoff, 1, 'first');
+    thrust_cutoff_idx = find(T_avg < -0.01, 1, 'first');
     fprintf("%d_%d\n", rpm_cutoff_idx, thrust_cutoff_idx);
     cutoff_idx = rpm_cutoff_idx;
     
     rpm_avg = rpm_avg(cutoff_idx:end);
-    thrust_avg = thrust_avg(cutoff_idx:end);
+    T_avg = T_avg(cutoff_idx:end);
     
-    % Run Calculations
+    % Run Thrust Calculations
     Kt = [];
     J = [];
     U = tunnel_info('velocity',freq);
@@ -57,38 +66,51 @@ function result_struct = analyze_single(prop_size, freq, plotOn)
     D = prop_size/10 * 0.0254; % tenth inch to meters
     for i = 1:numel(rpm_avg)
         n = rpm_avg(i) / 60; % rpm to rps
-        T = thrust_avg(i) * 9.80665; % kgf to N 
+        T = T_avg(i) * 9.80665; % kgf to N 
         J(i) = U / (n * D);
         Kt(i) = -T / (dens * n^2 * D^4);
     end
+    
+    % Run Efficiency calculations
+    Pm_calc = -Q .* V; % W
+    effM_calc = Pm_calc ./ Pe;
+    effP_calc = T ./ Pm_calc;
+    effO_calc = effM_calc .* effP_calc;
 
     % Package results
     result_struct.prop_size = prop_size;
     result_struct.freq = freq;
     result_struct.time = time_arr;
     result_struct.thrust = thrust_arr;
-    result_struct.thrust_zeroed = thrust_zeroed;
-    result_struct.thrust_avg = thrust_avg;
-    result_struct.rpm = rpm_arr;
+    result_struct.thrust_zeroed = T;
+    result_struct.thrust_avg = T_avg;
+    result_struct.rpm = rpm;
     result_struct.rpm_avg = rpm_avg;
     result_struct.power_start_idx = power_start;
     result_struct.rotation_start_idx = rpm_start;
+    result_struct.cutoff_idx = cutoff_idx;
     result_struct.J = J;
     result_struct.Kt = Kt;
+    result_struct.Pm_calc = Pm_calc;
+    result_struct.Pe = Pe;
+    result_struct.effM_calc = effM_calc;
+    result_struct.effP_calc = effP_calc;
+    result_struct.effO_calc = effO_calc;
     
     
     % Plot results
     if (plotOn)
-        plot_single(result_struct);
+        plot_single_thrust(result_struct);
+        plot_single_eff(result_struct);
     end
 end
 
 
 
-function plot_single(result_struct)
-    fig_name = sprintf("prop %d @ %d Hz", result_struct.prop_size, result_struct.freq);
-    figure('Name', fig_name);
-    sgtitle(fig_name);
+function plot_single_thrust(result_struct)
+    figure('Name', sprintf("prop %d @ %d Hz Thrust", result_struct.prop_size, result_struct.freq));
+    sgtitle(sprintf("%2.1f Inch Propeller Thrust @ %d Hz", result_struct.prop_size/10, result_struct.freq));
+    
     subplot(2,2,1)
     plot(result_struct.time, result_struct.thrust);
     xlabel("Time (s)");
@@ -113,4 +135,38 @@ function plot_single(result_struct)
     plot(result_struct.J, result_struct.Kt);
     yline(0,'--');
     title("Thrust Coefficient vs Advance Ratio");
+end
+
+function plot_single_eff(result_struct)
+    figure('Name', sprintf("prop %d @ %d Hz Eff", result_struct.prop_size, result_struct.freq));
+    sgtitle(sprintf("%2.1f Inch Propeller Efficiency @ %d Hz", result_struct.prop_size/10, result_struct.freq));
+    
+    subplot(2,3,1)
+    hold on
+    %plot(time_arr, Pm);
+    plot(result_struct.time, result_struct.Pm_calc);
+    title(sprintf("Mechanical Power\nW"));
+
+    subplot(2,3,2)
+    hold on
+    plot(result_struct.time, result_struct.Pe);
+    title(sprintf("Electrical Power\nW"));
+
+    subplot(2,3,3)
+    hold on
+    plot(result_struct.time, result_struct.effM_calc);
+    title("Motor Efficiency");
+
+    subplot(2,3,4)
+    hold on
+    plot(result_struct.time, result_struct.effP_calc,'r');
+    title(sprintf("Propeller Efficiency\nN/W"));
+    ylim([0,10]);
+    yline(0,'--');
+
+    subplot(2,3,5)
+    hold on
+    plot(result_struct.time, result_struct.effO_calc,'r');
+    title(sprintf("Overall Efficiency\nN/W"));
+    yline(0,'--');
 end
