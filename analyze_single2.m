@@ -36,7 +36,7 @@ function result_struct = analyze_single2(prop_size, freq, plotOn)
     time_arr = arr_cut(:,1);
     Q = arr_cut(:,9) - arr_in(1,9); % Nm
     T = arr_cut(:,10) - arr_cut(1,10); % Zero thrust readings
-    T = T * -9.80665; %kgf to N
+    T_N = T * -9.80665; %kgf to N
     V = arr_cut(:,13) .* (2*pi/60); % RPM to rad/s
     Pe = arr_cut(:,15); % W
     Pm = arr_cut(:,16); % W
@@ -66,15 +66,16 @@ function result_struct = analyze_single2(prop_size, freq, plotOn)
     D = prop_size/10 * 0.0254; % tenth inch to meters
     for i = 1:numel(rpm_avg)
         n = rpm_avg(i) / 60; % rpm to rps
-        T = T_avg(i) * 9.80665; % kgf to N 
+        thrust = T_avg(i) * 9.80665; % kgf to N 
         J(i) = U / (n * D);
-        Kt(i) = -T / (dens * n^2 * D^4);
+        Kt(i) = -thrust / (dens * n^2 * D^4);
     end
     
     % Run Efficiency calculations
-    Pm_calc = -Q .* V; % W
+    %Pm_calc = -Q .* V; % W
+    Pm_calc = 0;
     effM_calc = Pm_calc ./ Pe;
-    effP_calc = T ./ Pm_calc;
+    effP_calc = T_N ./ Pe * U;
     effO_calc = effM_calc .* effP_calc;
 
     % Package results
@@ -82,7 +83,7 @@ function result_struct = analyze_single2(prop_size, freq, plotOn)
     result_struct.freq = freq;
     result_struct.time = time_arr;
     result_struct.thrust = thrust_arr;
-    result_struct.thrust_zeroed = T;
+    result_struct.thrust_zeroed = -T;
     result_struct.thrust_avg = T_avg;
     result_struct.rpm = rpm;
     result_struct.rpm_avg = rpm_avg;
@@ -160,8 +161,8 @@ function plot_single_eff(result_struct)
     subplot(2,3,4)
     hold on
     plot(result_struct.time, result_struct.effP_calc,'r');
-    title(sprintf("Propeller Efficiency\nN/W"));
-    ylim([0,10]);
+    title(sprintf("Propeller Efficiency"));
+    ylim([0,1]);
     yline(0,'--');
 
     subplot(2,3,5)
