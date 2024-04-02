@@ -1,7 +1,7 @@
 function combined_struct = analyze_prop(propSize, plotOn, inner_plotOn)
     combined_struct.J = [];
     combined_struct.Kt = [];
-    combined_struct.effP = [];
+    combined_struct.effO = [];
 
     if(plotOn)
         %Plot 1
@@ -20,9 +20,9 @@ function combined_struct = analyze_prop(propSize, plotOn, inner_plotOn)
         title(sprintf("prop %d Advance Ratio vs Thrust Coefficient", propSize));
 
         %Plot 4
-        eff_time = figure('Name', 'eff_time');
+        eff_time = figure('Name', 'eff_rpm');
         hold on
-        title(sprintf("prop %d Propulsive Efficiency over Time", propSize));
+        title(sprintf("prop %d Efficiency vs RPM", propSize));
     end
     legend_labels = {};
     label_idx = 1;
@@ -33,8 +33,8 @@ function combined_struct = analyze_prop(propSize, plotOn, inner_plotOn)
         if (result_struct.status)
             combined_struct.J = [combined_struct.J,result_struct.J];
             combined_struct.Kt = [combined_struct.Kt,result_struct.Kt];
-            effP_filted = result_struct.effP_calc(result_struct.cutoff_idx:end)';
-            combined_struct.effP = [combined_struct.effP,effP_filted];
+            %effP_filted = result_struct.effP_calc(result_struct.cutoff_idx:end)';
+            combined_struct.effO = [combined_struct.effO,result_struct.effO_calc'];
             % Add legend entry
             legend_labels{label_idx} = sprintf("%d Hz", freq);
             label_idx = label_idx + 1;
@@ -54,7 +54,7 @@ function combined_struct = analyze_prop(propSize, plotOn, inner_plotOn)
 
                 %Plot 4
                 figure(eff_time);
-                plot(result_struct.time, result_struct.effP_calc);
+                plot(result_struct.rpm_avg, result_struct.effO_calc);
             end
         end
     end
@@ -69,7 +69,8 @@ function combined_struct = analyze_prop(propSize, plotOn, inner_plotOn)
         legend(legend_labels);
         figure(eff_time);
         legend(legend_labels);
-        ylim([0,1]);
+        ylim([0,0.1]);
+        xlim([0,5500]);
     end
     
     

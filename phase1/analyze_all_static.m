@@ -18,6 +18,9 @@ function analyze_all_static()
     combined_P = figure;
     hold on;
     
+    combined_T = figure;
+    hold on;
+    
     for propID = 1:3
         test_name = sprintf("prop%d_static",propSizes{propID});
         table_in = readtable(sprintf("%s.csv",test_name));
@@ -82,19 +85,21 @@ function analyze_all_static()
         
         
         figure(combined_O)
-        plot(rpm_avg, effO_calc,'-');
+        plot(rpm_avg, movmean(effO_calc,5),'.-');
         
         figure(combined_P)
         plot(rpm_avg, effP_calc,'-');
     
+        figure(combined_T)
+        plot(rpm_avg, T);
     end
     
     figure(combined_O)
     ylim([0,0.1]);
     yline(0,'--');
     xlabel("RPM")
-    ylabel("Efficiency (N/W)");
-    title("Overall Efficiency for static tests");
+    ylabel("Thrust to Power ratio (N/W)");
+    title("Thrust to Power ratio for static tests");
     legend({"9 inch","9.5 inch", "10 inch"});
     saveas(combined_O, "Combined_Overall_eff.png");
     
@@ -106,6 +111,14 @@ function analyze_all_static()
     title("Propeller Efficiency for static tests");
     legend({"9 inch","9.5 inch", "10 inch"});
     saveas(combined_P, "Combined_Prop_eff.png");
+    
+    figure(combined_T)
+    yline(0,'--');
+    xlabel("RPM")
+    ylabel("Thrust (N/W)");
+    title("Thrust for static tests");
+    legend({"9 inch","9.5 inch", "10 inch"},'Location','northwest');
+    saveas(combined_T, "Combined_thrust_rpm.png");
 end
 
 

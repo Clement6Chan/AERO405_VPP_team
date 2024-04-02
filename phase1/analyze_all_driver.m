@@ -11,7 +11,7 @@ title("Thrust Coefficient vs Advance Ratio");
 
 combined_eff_J = figure('Name', 'combined_eff_J');
 hold on
-title("Propulsive Efficiency vs Advance Ratio");
+title("Efficiency vs Advance Ratio");
 
 
 for propID = 1:3
@@ -21,7 +21,7 @@ for propID = 1:3
     plot(combined_struct.J, combined_struct.Kt,'.');
     
     figure(combined_eff_J);
-    plot(combined_struct.J, combined_struct.effP,'.');
+    plot(combined_struct.J, combined_struct.effO,'.');
     
     if (save_all)
         FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
@@ -43,11 +43,11 @@ xlabel("J");
 ylabel("K_T");
 
 figure(combined_eff_J);
-ylim([0,1]);
+ylim([0,0.1]);
 xlim([0,1]);
 legend({'9 inch','9.5 inch', '10 inch'});
 xlabel("J");
-ylabel("Efficiency");
+ylabel("Efficiency (N/W)");
 
 if (save_all)
     saveas(combined_kt_J, 'combined_kt_J.png');
