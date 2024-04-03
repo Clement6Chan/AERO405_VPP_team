@@ -91,7 +91,7 @@ function analyze_all_static()
         plot(rpm_avg, effP_calc,'-');
     
         figure(combined_T)
-        plot(rpm_avg, T);
+        plot(Pm, T);
     end
     
     figure(combined_O)
@@ -108,17 +108,16 @@ function analyze_all_static()
     yline(0,'--');
     xlabel("RPM")
     ylabel("Efficiency (N/W)");
-    title("Propeller Efficiency for static tests");
     legend({"9 inch","9.5 inch", "10 inch"});
     saveas(combined_P, "Combined_Prop_eff.png");
     
     figure(combined_T)
     yline(0,'--');
-    xlabel("RPM")
-    ylabel("Thrust (N/W)");
-    title("Thrust for static tests");
+    xlabel("Electrical Power (W)")
+    ylabel("Thrust (N)");
+    title("Thrust vs Power for static tests");
     legend({"9 inch","9.5 inch", "10 inch"},'Location','northwest');
-    saveas(combined_T, "Combined_thrust_rpm.png");
+    saveas(combined_T, "Combined_thrust_pow.png");
 end
 
 
